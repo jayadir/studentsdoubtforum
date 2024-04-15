@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import Header from './Components/Header';
 import './App.css';
 import { BrowserRouter as Router, Link, Outlet } from 'react-router-dom';
@@ -13,7 +12,7 @@ function App() {
   const dispatch=useDispatch()
   useEffect(() => {
   
-    const unsubscribe = auth.onAuthStateChanged((user) => { 
+     auth.onAuthStateChanged((user) => { 
       if (user) {
         dispatch(setUser({ 
           uid: user.uid,
@@ -27,8 +26,9 @@ function App() {
       }
     });
   
-    return () => unsubscribe(); 
-  }, [dispatch]);
+    // return () => unsubscribe(); 
+  }, [dispatch,auth]);
+  
   return (
     
     <div className="App">

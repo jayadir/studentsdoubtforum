@@ -1,0 +1,36 @@
+/* Login.css */
+.login-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px;
+  }
+  
+  .left-section {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .right-section {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .login-form {
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  .btn-google {
+    background-color: #db4437;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-google:hover {
+    background-color: #ff5c4d;
+  }
+  

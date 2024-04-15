@@ -10,6 +10,7 @@ import Answer from './Components/Answer';
 import Login from './Components/Auth/Login';
 import { Provider } from 'react-redux';
 import {store} from './redux/Store';
+import ProtectedRoute from './Components/Auth/ProtectedRoute';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter([
   {
@@ -18,23 +19,24 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/',
-        element: <Homepage />
+        element:<ProtectedRoute> <Homepage /></ProtectedRoute>
       },
       {
         path: '/ask',
-        element: <CreateQuestion/>
+        element: <ProtectedRoute><CreateQuestion/></ProtectedRoute>
       },
       {
         path:'/answer',
-        element: <Answer/>
+        element:<ProtectedRoute> <Answer/></ProtectedRoute>
       },
-      {
-        path:'/Login',
-        element: <Login/>
-      }
     ]
+  },
+  {
+    path:'/login',
+    element:<Login/>
   }
-])
+]);
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
