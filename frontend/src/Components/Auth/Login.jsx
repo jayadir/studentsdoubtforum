@@ -21,9 +21,14 @@ export default function Login() {
     setAlert(null);
   };
   const googleSignin = () => {
-    signInWithPopup(auth, provider).then((response) => {
-      console.log(response);
-    });
+    signInWithPopup(auth, provider)
+      .then((response) => {
+        navigate("/");
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const emailSignIn = (e) => {
@@ -41,7 +46,6 @@ export default function Login() {
         setEmail("");
         setPassword("");
         navigate("/");
-
       })
       .catch((err) => {
         console.log(err);

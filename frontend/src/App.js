@@ -5,13 +5,14 @@ import Sidebar from './Components/Sidebar';
 import { userSelector } from './redux/Slices/userSice';
 import {useSelector,useDispatch} from 'react-redux'
 import {auth} from './Firebase'
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import {setUser,removeUser} from './redux/Slices/userSice'
+import Question from './Components/Question';
+import axios from 'axios'
 function App() {
   const userstate=useSelector(userSelector)
   const dispatch=useDispatch()
   useEffect(() => {
-  
      auth.onAuthStateChanged((user) => { 
       if (user) {
         dispatch(setUser({ 
@@ -25,14 +26,15 @@ function App() {
         dispatch(removeUser());
       }
     });
-  
     // return () => unsubscribe(); 
   }, [dispatch,auth]);
-  
+
+
   return (
     
     <div className="App">
       <Header/>
+      
       <main>
         <Outlet/>
       </main>

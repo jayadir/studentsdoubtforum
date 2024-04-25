@@ -22,6 +22,14 @@ const QuestionSchema = new mongoose.Schema({
     comment:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Comments"
+    },
+    upvotes:{
+        type:Number,
+        default:0
+    },
+    downvotes:{
+        type:Number,
+        default:0
     }
 
 })
