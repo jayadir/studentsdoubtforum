@@ -37,7 +37,9 @@ export default function Question({ data }) {
             <h5 className="card-title">{data.title}</h5>
           </Link>
           <hr />
-          <p className="card-text">{limitString(data.description,200)}</p>
+          <p className="card-text" dangerouslySetInnerHTML={{__html:data.description}}>
+            {/* {limitString(data.description,200)} */}
+            </p>
           <hr />
           <div className="d-flex align-items-center justify-content-between ">
             <div>
@@ -66,9 +68,10 @@ export default function Question({ data }) {
             </div>
             {/* <div> tags</div> */}
             <div>
-              {data.tags.map((tag) => {
+              {data.tags.map((tag,index) => {
                 return (
                   <span
+                  key={index}
                     className="badge"
                     style={{
                       color: "black",

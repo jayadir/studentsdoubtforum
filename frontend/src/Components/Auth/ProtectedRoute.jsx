@@ -6,14 +6,17 @@ import { useNavigate } from 'react-router-dom';
 const ProtectRoute = ({ children }) => {
   const user = useSelector(userSelector);
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (!user) {
+    if (user === undefined || user === null) {
       navigate('/login');
+      console.log('User not found', user);
     }
   }, [user, navigate]);
-  if (!user) {
+  if (user === undefined || user === null) {
     return null;
   }
   return children;
 };
+
 export default React.memo(ProtectRoute);

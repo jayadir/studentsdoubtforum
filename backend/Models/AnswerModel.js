@@ -23,9 +23,9 @@ const AnsSchema=new mongoose.Schema({
         type:Number,
         default:0
     },
-    comment:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Comments"
-    }
+    comment:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comments"
+      }]
 })
 module.exports=mongoose.model("Answers",AnsSchema);

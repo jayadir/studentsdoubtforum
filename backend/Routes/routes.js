@@ -15,4 +15,10 @@ router.route("/upvote/:id")
     .put(questionController.upvote);
 router.route("/downvote/:id")
     .put(questionController.downvote);
+router.route("/getOneQuestion/:id")
+    .get(questionController.getOneQuestion);
+router.route("/deleteQuestion/:id")
+    .delete(questionController.deleteQuestion);
+router.route("/answer/:id")
+    .put(answerController.vote);
 module.exports = router;

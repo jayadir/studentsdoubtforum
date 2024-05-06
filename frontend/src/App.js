@@ -1,45 +1,43 @@
 import Header from './Components/Header';
 import './App.css';
-import { BrowserRouter as Router, Link, Outlet } from 'react-router-dom';
-import Sidebar from './Components/Sidebar';
+import { BrowserRouter as Router, Outlet } from 'react-router-dom';
 import { userSelector } from './redux/Slices/userSice';
-import {useSelector,useDispatch} from 'react-redux'
-import {auth} from './Firebase'
-import { useEffect,useState } from 'react';
-import {setUser,removeUser} from './redux/Slices/userSice'
-import Question from './Components/Question';
-import axios from 'axios'
+import { useSelector, useDispatch } from 'react-redux';
+import { auth } from './Firebase';
+import { useEffect } from 'react';
+import { setUser, removeUser } from './redux/Slices/userSice';
+
 function App() {
-  const userstate=useSelector(userSelector)
-  const dispatch=useDispatch()
+  const userState = useSelector(userSelector);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-     auth.onAuthStateChanged((user) => { 
+    const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        dispatch(setUser({ 
-          uid: user.uid,
-          name: user.displayName,
-          email: user.email,
-          isVerified: user.emailVerified
-        }));
-      }
-      else{
+        dispatch(
+          setUser({
+            uid: user.uid,
+            name: user.displayName,
+            email: user.email,
+            isVerified: user.emailVerified
+          })
+        );
+      } else {
         dispatch(removeUser());
       }
     });
-    // return () => unsubscribe(); 
-  }, [dispatch,auth]);
 
+    // Unsubscribe from the listener when the component unmounts
+    return () => unsubscribe();
+  }, [dispatch]);
 
   return (
-    
     <div className="App">
-      <Header/>
-      
+      <Header />
       <main>
-        <Outlet/>
+        <Outlet />
       </main>
     </div>
-    
   );
 }
 

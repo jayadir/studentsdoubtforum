@@ -19,10 +19,10 @@ const QuestionSchema = new mongoose.Schema({
     askedBy:{
         type:Object
     },
-    comment:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Comments"
-    },
+    comment:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comments"
+      }],
     upvotes:{
         type:Number,
         default:0

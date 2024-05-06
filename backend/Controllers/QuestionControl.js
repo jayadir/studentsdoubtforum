@@ -1,5 +1,7 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const app = express();
+const auth=require("../middlewares/Authorization");
 const question = require("../Models/QuestionModel");
 app.use(express.json());
 
@@ -28,7 +30,7 @@ exports.getAllQuestions = async (req, res) => {
     .aggregate([
       {
         $lookup: {
-          from: "Answers",
+          from: "answers",
           localField: "_id",
           foreignField: "question",
           as: "answers",
@@ -59,6 +61,86 @@ exports.getAllQuestions = async (req, res) => {
       res.status(500).json({ status: false, message: error.message });
     });
 };
+
+exports.getOneQuestion = async (req, res) => {
+  try {
+    const data = await question.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(req.params.id) },
+      },
+      {
+        $lookup: {
+          from: "answers",
+          let: { question_id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$question", "$$question_id"], // Changed field name from question_id to question
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                answeredBy: 1, // Changed field name from user to answeredBy
+                Answer: 1, // Changed field name from answer to Answer
+                answeredAt: 1, // Changed field name from created_at to answeredAt
+                question: 1, // Changed field name from question_id to question
+                upvotes: 1,
+                downvotes: 1,
+                comment: 1,
+              },
+            },
+            {
+              $sort: { upvotes: -1 }, // Sort based on upvotes in descending order
+            },
+          ],
+          as: "answerDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "comments",
+          let: { question_id: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$question", "$$question_id"], // Changed field name from question_id to question
+                },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                question: 1, // Changed field name from question_id to question
+                commentedBy: 1,
+                comment: 1,
+                commentedAt: 1,
+                answer: 1,
+              },
+            },
+          ],
+          as: "comments",
+        },
+      },
+      {
+        $project: {
+          __v: 0,
+        },
+      },
+    ]);
+
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(400).send({
+      error: err,
+      message: "Question not found",
+    });
+  }
+};
+
 exports.upvote = async (req, res) => {
   try {
     const response = await question.findByIdAndUpdate(
@@ -82,9 +164,18 @@ exports.downvote = async (req, res) => {
     );
     res.status(200).json({
       status: true,
-      response
+      response,
     });
   } catch (error) {
     res.status(500).json({ status: false });
+  }
+};
+
+exports.deleteQuestion = async (req, res) => {
+  try {
+    const response =await question.findByIdAndDelete(req.params.id);
+    res.status(200).json({status:true, resp:response})
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
   }
 };

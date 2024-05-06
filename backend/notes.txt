@@ -1,1 +1,3 @@
 used app.cors()
+added delete and update but delete isnt working,yet to add update functionality in backend
+

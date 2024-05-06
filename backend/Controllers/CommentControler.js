@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const auth=require("../middlewares/Authorization");
 const comment = require("../Models/CommentModel");
 app.use(express.json());
 exports.createComment = async (req, res) => {

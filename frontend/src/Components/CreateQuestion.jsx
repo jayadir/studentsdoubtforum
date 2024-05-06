@@ -1,13 +1,19 @@
 import React from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Alert from "./Alert";
 import { useSelector } from "react-redux";
 import { userSelector } from "../redux/Slices/userSice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { StacksEditor } from "@stackoverflow/stacks-editor";
+import "@stackoverflow/stacks-editor/dist/styles.css";
+import { useRef } from "react";
+
+// import "@stackoverflow/stacks-editor/dist/fonts.css";
 export default function CreateQuestion() {
+  const editorRef = useRef(null);
   const [tag, setTag] = useState("");
   const [tagList, setTagList] = useState([]);
   const [value, setValue] = useState("");
@@ -16,6 +22,12 @@ export default function CreateQuestion() {
   const navigate = useNavigate();
   // const [description, setDescription] = useState("");
   const [alert, setAlert] = useState("");
+  useEffect(() => {
+    if (editorRef.current) {
+      new StacksEditor(editorRef.current, "*Your* **markdown** here");
+    }
+  }, []);
+  
   const handleAlertClose = () => {
     setAlert(null);
   };
@@ -29,6 +41,13 @@ export default function CreateQuestion() {
   const handleRemoveTag = (indexToRemove) => {
     setTagList(tagList.filter((_, index) => index !== indexToRemove));
   };
+
+  const stripHtmlTags = (html) => {
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+    return temp.textContent || temp.innerText || "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (question === "" || value === "" || tagList.length === 0) {
@@ -37,7 +56,9 @@ export default function CreateQuestion() {
     }
     const questionData = {
       title: question,
-      description: value.substring(3, value.length - 4),
+      description: value,
+      // description: value.substring(3, value.length - 4),
+      // description: stripHtmlTags(value).trim(),
       tags: tagList,
       askedBy: user,
     };
@@ -83,8 +104,46 @@ export default function CreateQuestion() {
               className=""
               placeholder="Enter your description"
               style={{ maxWidth: "100%", width: "100%" }}
+              // modules={{
+              //   toolbar: true,
+              //   syntax: true, // Enable syntax highlighting
+              //   clipboard: {
+              //     matchVisual: false,
+              //   },
+              // }}
+              // formats={[
+              //   "header",
+              //   "font",
+              //   "size",
+              //   "bold",
+              //   "italic",
+              //   "underline",
+              //   "strike",
+              //   "blockquote",
+              //   "code-block", // Enable code block format
+              //   "list",
+              //   "bullet",
+              //   "indent",
+              //   "link",
+              //   "image",
+              //   "color",
+              //   "background",
+              // ]}
             />
           </div>
+          {/* <div className="form-group">
+            <div id="editor-container" ref={editorRef}>
+              <h5 className="my-3"> Description</h5>
+              <StacksEditor
+                initialValue="Your markdown here"
+                value={value}
+                onChange={setValue}
+                placeholder="Enter your description"
+                style={{ maxWidth: "100%", width: "100%" }}
+              />
+            </div>
+          </div> */}
+
           <div className="form-group">
             <h5 className="my-3">
               <label htmlFor="tags">Tags</label>

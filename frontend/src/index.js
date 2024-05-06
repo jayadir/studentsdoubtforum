@@ -26,7 +26,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute><CreateQuestion/></ProtectedRoute>
       },
       {
-        path:'/answer',
+        path:'/answer/:questionId',
         element:<ProtectedRoute> <Answer/></ProtectedRoute>
       },
     ]

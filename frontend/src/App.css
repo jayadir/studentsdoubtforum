@@ -1,0 +1,94 @@
+.answer-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .question-details {
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    margin-bottom: 20px;
+  }
+  
+  .question-details h3 {
+    margin-bottom: 10px;
+  }
+  
+  .question-divider {
+    border: none;
+    border-top: 1px solid #ccc;
+  }
+  
+  .asked-on {
+    font-style: italic;
+    margin-bottom: 5px;
+  }
+  
+  .asked-by {
+    font-weight: bold;
+  }
+  
+  .answer-section {
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+
+  .answer-container {
+    position: relative;
+  }
+  
+  .create-answer-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 75%;
+    height: 80%;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    overflow-y: auto; 
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  /* Adjustments for the create answer form */
+  .create-answer-form {
+    margin-top: 20px;
+    width: 100%; /* Make the form take up full width */
+    height: 85%; /* Make the form take up full height */
+  }
+  
+  .create-answer-form .react-quill {
+    height: calc(100% - 60px); /* Make the Quill editor take up most of the height */
+  }
+  
+  .submit-answer-button {
+    width: 20%;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    /* margin: auto; */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-answer-button:hover {
+    background-color: #0056b3;
+  }
+  

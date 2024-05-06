@@ -3,11 +3,14 @@ import {
   sendEmailVerification,
   signInWithEmailAndPassword,
   signInWithPopup,
+  setPersistence,
+  browserSessionPersistence,
+  browserLocalPersistence,
 } from "firebase/auth";
+
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { auth, provider } from "../../Firebase";
-import { set } from "mongoose";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,48 +20,53 @@ export default function Login() {
   const [name, setName] = useState("");
   const [alert, setAlert] = useState("");
   const [loading, setLoading] = useState(false);
+
   const handleAlertClose = () => {
-    setAlert(null);
-  };
-  const googleSignin = () => {
-    signInWithPopup(auth, provider)
-      .then((response) => {
-        navigate("/");
-        console.log(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    setAlert("");
   };
 
-  const emailSignIn = (e) => {
+  const googleSignin = () => {
+    setPersistence(auth, browserSessionPersistence).then(() => {
+      signInWithPopup(auth, provider)
+        .then((response) => {
+          navigate("/");
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  };
+
+  const emailSignIn = async (e) => {
     e.preventDefault();
     if (email === "" || password === "") {
       setAlert("Please fill all the fields");
       return;
     }
     setLoading(true);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
-        console.log(res);
-        setLoading(false);
-        setName("");
-        setEmail("");
-        setPassword("");
-        navigate("/");
-      })
-      .catch((err) => {
-        console.log(err);
-        setAlert(err.message);
-        setLoading(false);
-      });
+    setPersistence(auth, browserLocalPersistence).then(() => {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((res) => {
+          console.log(res);
+          setLoading(false);
+          setName("");
+          setEmail("");
+          setPassword("");
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err);
+          setAlert(err.message);
+          setLoading(false);
+        });
+    });
   };
 
   const emailSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
     if (email === "" || password === "" || name === "") {
-      // alert("Please fill all the fields");
       setAlert("Please fill all the fields");
       return;
     }
