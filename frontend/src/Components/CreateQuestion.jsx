@@ -22,11 +22,11 @@ export default function CreateQuestion() {
   const navigate = useNavigate();
   // const [description, setDescription] = useState("");
   const [alert, setAlert] = useState("");
-  useEffect(() => {
-    if (editorRef.current) {
-      new StacksEditor(editorRef.current, "*Your* **markdown** here");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (editorRef.current) {
+  //     new StacksEditor(editorRef.current, "*Your* **markdown** here");
+  //   }
+  // }, []);
   
   const handleAlertClose = () => {
     setAlert(null);
@@ -61,6 +61,7 @@ export default function CreateQuestion() {
       // description: stripHtmlTags(value).trim(),
       tags: tagList,
       askedBy: user,
+      uid:user.uid
     };
     try {
       const status = await axios.post("/api/createQuestion", questionData);
@@ -70,6 +71,7 @@ export default function CreateQuestion() {
       console.error("Error creating question:", error);
     }
   };
+  // console.log(user)
   return (
     <div
       className="mx-auto w-50 d-flex flex-column"

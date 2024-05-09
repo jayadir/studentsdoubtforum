@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-const auth=require("../middlewares/Authorization");
+const auth = require("../middlewares/Authorization");
 const question = require("../Models/QuestionModel");
 app.use(express.json());
 
@@ -11,6 +11,7 @@ exports.createQuestion = async (req, res) => {
     description: req.body.description,
     tags: req.body.tags,
     askedBy: req.body.askedBy,
+    uid:req.body.uid
   });
 
   try {
@@ -26,6 +27,8 @@ exports.createQuestion = async (req, res) => {
 };
 
 exports.getAllQuestions = async (req, res) => {
+  const {filter}=req.query
+  const field=filter==="Newest"?"createdAt":"upvotes"
   question
     .aggregate([
       {
@@ -46,7 +49,7 @@ exports.getAllQuestions = async (req, res) => {
       },
       {
         $sort: {
-          createdAt: -1,
+          [field]: -1,
         },
       },
     ])
@@ -173,9 +176,49 @@ exports.downvote = async (req, res) => {
 
 exports.deleteQuestion = async (req, res) => {
   try {
-    const response =await question.findByIdAndDelete(req.params.id);
-    res.status(200).json({status:true, resp:response})
+    const response = await question.findByIdAndDelete(req.params.id);
+    res.status(200).json({ status: true, resp: response });
   } catch (error) {
     res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.searchQuestions = async (req, res) => {
+  try {
+    const title = req.query.title;
+    const response = await question.find({
+      $text: { $search: title },
+    });
+    res.status(200).json({
+      status: true,
+      data: response,
+    });
+  } catch (error) {
+    res.status(500).json({ status: false, error: error.message });
+  }
+};
+
+exports.getUserQuestions = async (req, res) => {
+  const { uid } = req.params;
+  try {
+    const response = await question.aggregate([
+      {
+        $match: {
+          $expr: {
+            $eq: ["$askedBy.uid", uid]
+          }
+        }
+      }
+    ]).exec();
+    res.status(200).json({
+      status: true,
+      data: response,
+      uid
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message
+    });
   }
 };

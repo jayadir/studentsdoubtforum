@@ -6,6 +6,7 @@ import {
   setPersistence,
   browserSessionPersistence,
   browserLocalPersistence,
+  signOut,
 } from "firebase/auth";
 
 import { useNavigate } from "react-router-dom";
@@ -17,14 +18,17 @@ export default function Login() {
   const [register, setRegister] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  // const [name, setName] = useState("");
   const [alert, setAlert] = useState("");
   const [loading, setLoading] = useState(false);
-
+  // Function to set a cookie with a given name, value, and expiration date
+  const setCookie = (name, value, expires) => {
+    document.cookie = `${name}=${value};expires=${expires};path=/`;
+  };
   const handleAlertClose = () => {
     setAlert("");
   };
-
+ 
   const googleSignin = () => {
     setPersistence(auth, browserSessionPersistence).then(() => {
       signInWithPopup(auth, provider)
@@ -48,12 +52,24 @@ export default function Login() {
     setPersistence(auth, browserLocalPersistence).then(() => {
       signInWithEmailAndPassword(auth, email, password)
         .then((res) => {
-          console.log(res);
-          setLoading(false);
-          setName("");
-          setEmail("");
-          setPassword("");
-          navigate("/");
+          if (res.user.emailVerified) {
+            console.log(res);
+            setLoading(false);
+            setEmail("");
+            setPassword("");
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 1);
+            setCookie("jwt", res.user.accessToken, expires);
+            setCookie("uid", res.user.uid, expires);
+            navigate("/");
+
+          } else {
+            setAlert("Please verify your email before signing in.");
+            setLoading(false);
+            signOut(auth).then(() => {
+              console.log("User signed out");
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -61,39 +77,6 @@ export default function Login() {
           setLoading(false);
         });
     });
-  };
-
-  const emailSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (email === "" || password === "" || name === "") {
-      setAlert("Please fill all the fields");
-      return;
-    }
-    try {
-      const usercred = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const status = await sendEmailVerification(usercred.user);
-      setAlert(
-        "Verification email sent. Please verify your email & login again."
-      );
-      setLoading(false);
-      setName("");
-      setEmail("");
-      setPassword("");
-      console.log(usercred);
-    } catch (error) {
-      if (error.message === "Firebase: Error (auth/email-already-in-use).") {
-        setAlert("This email is already registered. Please login.");
-      }
-      setName("");
-      setEmail("");
-      setPassword("");
-      setLoading(false);
-    }
   };
 
   return (
@@ -122,7 +105,7 @@ export default function Login() {
               </div>
               <div className="card-body">
                 <form>
-                  {register && (
+                  {/* {register && (
                     <div className="mb-3">
                       <label htmlFor="name" className="form-label">
                         Name
@@ -136,7 +119,7 @@ export default function Login() {
                         required
                       />
                     </div>
-                  )}
+                  )} */}
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label">
                       Email address
@@ -165,43 +148,24 @@ export default function Login() {
                   </div>
                   <div className="text-center">
                     <div className="text-center">
-                      {register ? (
+                      <>
                         <button
                           type="submit"
                           className="btn btn-primary"
+                          onClick={emailSignIn}
                           disabled={loading}
-                          onClick={emailSignUp}
                         >
-                          Register
+                          Login
                         </button>
-                      ) : (
-                        <>
-                          <button
-                            type="submit"
-                            className="btn btn-primary"
-                            onClick={emailSignIn}
-                            disabled={loading}
-                          >
-                            Login
-                          </button>
-                        </>
-                      )}
+                      </>
                     </div>
-                    {!register ? (
+                    {!register && (
                       <div
                         className="m-2 text-primary"
-                        onClick={() => setRegister(true)}
+                        onClick={() => navigate("/createprofile")}
                         style={{ cursor: "pointer" }}
                       >
                         <u>click here to register</u>
-                      </div>
-                    ) : (
-                      <div
-                        className="m-2 text-primary"
-                        onClick={() => setRegister(false)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <u>click here to login</u>
                       </div>
                     )}
                   </div>

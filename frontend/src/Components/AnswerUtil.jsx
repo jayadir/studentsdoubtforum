@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 import IconButton from "@material-ui/core/IconButton";
+import { Link } from "react-router-dom";
 import "./AnswerComponent.css"; // Import the CSS file
 import axios from "axios";
 import { blue } from "@material-ui/core/colors";
@@ -64,10 +65,10 @@ const AnswerComponent = ({ answer, comments }) => {
                 <span style={{ fontSize: 20, marginLeft: 4 }}>{downvotes}</span>
               </IconButton>
             </div>
-            <p>
+            <Link to={`/profile/${answer?.answeredBy?.uid}`}>
               Answered by: {answer.answeredBy.name}{" "}
-              <span>({answer.answeredBy.email})</span>
-            </p>
+              {/* <span>({answer.answeredBy.email})</span> */}
+            </Link>
             <p>Answered at: {new Date(answer.answeredAt).toLocaleString()}</p>
             <p style={{marginLeft: '20px'}}>{numberOfComments} comments</p>
           </div>

@@ -17,7 +17,12 @@ const QuestionSchema = new mongoose.Schema({
         default:Date.now
     },
     askedBy:{
-        type:Object
+        type:Object,
+        // ref:"Users"
+    },
+    uid:{
+        type:String,
+        ref:"Users"
     },
     comment:[{
         type: mongoose.Schema.Types.ObjectId,
@@ -33,4 +38,5 @@ const QuestionSchema = new mongoose.Schema({
     }
 
 })
+QuestionSchema.index({title:"text"});
 module.exports = mongoose.model("Questions",QuestionSchema);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,Link } from "react-router-dom";
 import axios from "axios";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import Quill CSS
@@ -102,13 +102,15 @@ export default function Answer() {
         <div className="row">
           <div className="col-md-6">
             {user?.uid !== details?.askedBy?.uid ? (
-              <div className="asked-by">
+              <Link className="asked-by" 
+              to={`/profile/${details?.askedBy?.uid}`}
+               >
                 Asked by:{" "}
                 {details.askedBy?.email.substring(
                   0,
                   details.askedBy.email.indexOf("@")
                 )}
-              </div>
+              </Link>
             ) : (
               <div>
                 <div className="actions">

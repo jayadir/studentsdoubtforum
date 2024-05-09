@@ -3,19 +3,23 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { auth } from "../Firebase";
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { removeUser } from "../redux/Slices/userSice";
+import { userSelector } from "../redux/Slices/userSice";
+import Cookies from "js-cookie";
+import axios from "axios";
 export default function Header() {
   const dispatch = useDispatch();
-
+  const [searchText, setSearchText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const user = useSelector(userSelector);
   const navigate = useNavigate();
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 768);
     };
-
+    
     handleResize(); // Initial check
     window.addEventListener("resize", handleResize);
 
@@ -23,6 +27,10 @@ export default function Header() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+  const handleSearch=async(e)=>{
+    e.preventDefault()
+    navigate(`/${searchText.replace(/ /g, "_")}`)
+  }
   const handleLogout = () => {
     auth
       .signOut()
@@ -30,6 +38,8 @@ export default function Header() {
         dispatch(removeUser());
         navigate("/login");
         // console.log('Logged out');
+        Cookies.remove("jwt");
+
       })
       .catch((error) => {
         console.error("Error logging out:", error);
@@ -96,10 +106,12 @@ export default function Header() {
               <input
                 className="form-control me-2"
                 type="search"
+                value={searchText}
+                onChange={(e)=>{setSearchText(e.target.value)}}
                 placeholder="Search"
                 aria-label="Search"
               />
-              <button className="btn btn-outline-success" type="submit">
+              <button className="btn btn-outline-success" onClick={handleSearch} type="submit">
                 Search
               </button>
             </form>
@@ -126,7 +138,7 @@ export default function Header() {
                   }}
                 >
                   <li>
-                    <Link className="dropdown-item" to="/">
+                    <Link className="dropdown-item" to={`/profile/${user?.uid}`}>
                       Profile
                     </Link>
                   </li>
