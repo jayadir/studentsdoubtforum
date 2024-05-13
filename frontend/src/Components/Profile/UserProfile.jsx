@@ -4,6 +4,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from "react-router-dom";
 import Question from "../Question"
 import axios from "axios"
+import Cookies from 'js-cookie'
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(2),
@@ -30,13 +31,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function UserProfile() {
+  const jwt=Cookies.get('jwt')
+  const config={
+    headers:{
+      Authorization:`Bearer ${jwt}`
+    }
+  }
   const [userDetails, setUserDetails] = useState({});
   const [userQuestions, setUserQuestions] = useState([]); 
   const classes = useStyles();
   const {uid}=useParams();
   useEffect(()=>{
     async function getUserDetails() {try {
-      const res=await axios.get(`/api/User?userId=${uid}`)
+      const res=await axios.get(`/api/User?userId=${uid}`,config)
       setUserDetails(res?.data?.data[0])
     } catch (error) {
       console.log(error)
@@ -46,7 +53,7 @@ export default function UserProfile() {
   useEffect(()=>{
     async function getUserQuestions(){
       try {
-        const res=await axios.get(`/api/userQuestion/${uid}`)
+        const res=await axios.get(`/api/userQuestion/${uid}`,config)
         // console.log(res)
         setUserQuestions(res?.data?.data)
       } catch (error) {
@@ -64,10 +71,10 @@ export default function UserProfile() {
         </div>
         <div className={classes.userDetails}>
           <h2>User Details</h2>
-          <p>Name: {userDetails.name }</p>
-          <p>Email: {userDetails.email}</p>
-          <p>Rating: {userDetails.rating}</p>
-          <p>{userDetails.qualification}</p>
+          <p>Name: {userDetails?.name }</p>
+          <p>Email: {userDetails?.email}</p>
+          <p>Rating: {userDetails?.rating}</p>
+          <p>{userDetails?.qualification}</p>
         </div>
       </div>
       

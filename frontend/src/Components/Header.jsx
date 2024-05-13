@@ -9,6 +9,12 @@ import { userSelector } from "../redux/Slices/userSice";
 import Cookies from "js-cookie";
 import axios from "axios";
 export default function Header() {
+  const jwt=Cookies.get('jwt')
+  const config={
+    headers:{
+      Authorization:`Bearer ${jwt}`
+    }
+  }
   const dispatch = useDispatch();
   const [searchText, setSearchText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
@@ -39,6 +45,7 @@ export default function Header() {
         navigate("/login");
         // console.log('Logged out');
         Cookies.remove("jwt");
+        Cookies.remove('uid');
 
       })
       .catch((error) => {

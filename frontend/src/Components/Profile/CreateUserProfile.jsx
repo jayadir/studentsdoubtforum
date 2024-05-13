@@ -6,7 +6,9 @@ import {
 } from "firebase/auth";
 import { auth } from "../../Firebase";
 import axios from "axios";
+import Cookies from 'js-cookie';
 const CreateUserProfile = () => {
+  const jwt=Cookies.get('jwt');
   const [email, setEmail] = useState("");
   // const [userDetails, setUserDetails] = useState({});
   const [password, setPassword] = useState("");
@@ -17,6 +19,11 @@ const CreateUserProfile = () => {
   const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
   const [organization, setOrganization] = useState("");
+  const config={
+    headers:{
+      Authorization: `Bearer ${jwt}`
+    }
+  }
   const navigate = useNavigate();
   const emailSignUp = async (e) => {
     e.preventDefault();
@@ -55,7 +62,7 @@ const CreateUserProfile = () => {
         userId: usercred.user.uid,
       };
       try {
-        const res = await axios.post("/api/User", userDetails);
+        const res = await axios.post("/api/User", userDetails,config);
       } catch (error) {
         console.error("Error adding user to MongoDB:", error);
         setAlert("Error creating user. Please try again later.");

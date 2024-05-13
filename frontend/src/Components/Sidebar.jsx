@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 // import 'bootstrap/dist/css/bootstrap.min.css';
-
+import axios from "axios";
+import { Link } from "react-router-dom";
+import Cookies from "js-cookie";
 function Sidebar() {
+  const [userDetails, setUserDetails] = useState({});
+  const uid = Cookies.get("uid");
+  useEffect(() => {
+    const newToken = Cookies.get("jwt");
+    axios
+      .get(`/api/User?userId=${uid}`, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      })
+      .then((res) => {
+        setUserDetails(res.data.data[0]);
+        console.log(res.data.data[0])
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <div className="container-fluid vh-100">
       <div className="row">
@@ -9,26 +30,42 @@ function Sidebar() {
           <div className="position-sticky">
             <ul className="nav flex-column">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">Home</a>
+                <a className="nav-link active" aria-current="page" href="#">
+                  Home
+                </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Questions</a>
+                <a className="nav-link" href="#">
+                  Questions
+                </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Tags</a>
+                <a className="nav-link" href="#">
+                  Tags
+                </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Users</a>
+                <a className="nav-link" href="#">
+                  Blogs
+                </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">Jobs</a>
+                <Link
+                  className="nav-link"
+                  to={`/organisation/${userDetails?.organization?.replace(
+                    /\s/g,
+                    "_"
+                  )}`}
+                >
+                  Organisation
+                </Link>{" "}
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <a className="nav-link" href="#">Teams</a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="#">Developer Jobs Directory</a>
-              </li>
+              </li> */}
               {/* Add more sidebar items as needed */}
             </ul>
           </div>

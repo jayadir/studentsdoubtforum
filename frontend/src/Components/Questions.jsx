@@ -2,7 +2,16 @@ import React, { useState, useEffect } from "react";
 import Question from "./Question";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-export default function Questions() {
+import Cookies from 'js-cookie'
+import {auth} from '../Firebase'
+export default function Questions({Organisation}) {
+  const org=Organisation||"all"
+  const jwt=Cookies.get('jwt')
+  const config={
+    headers:{
+      Authorization:`Bearer ${jwt}`
+    }
+  }
   const [value, setValue] = useState("Filter");
   const [questions, setQuestions] = useState([]);
   const [filterItems, setFilterItems] = useState("Newest");
@@ -11,11 +20,18 @@ export default function Questions() {
   useEffect(() => {
     async function fetchData() {
       try {
+        const newToken = await auth?.currentUser?.getIdToken(true);
+        // console.log(newToken)
         const questionsResponse =
           title === undefined
-            ? await axios.get(`/api/getAllQuestions?filter=${filterItems}`)
+            ? await axios.get(`/api/getAllQuestions?filter=${filterItems}&org=${org}`,{
+              headers:{
+                Authorization:`Bearer ${newToken}`
+              }
+            })
             : await axios.get(
-                `/api/searchquestions?title=${title.replace(/_/g, " ")}?filter=${filterItems}`
+                `/api/searchquestions?title=${title.replace(/_/g," ")}&filter=${filterItems}&org=${org}`,
+                config
               );
         setQuestions(questionsResponse.data.data);
       } catch (error) {

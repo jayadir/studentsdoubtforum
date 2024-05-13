@@ -1,7 +1,7 @@
 import React from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Alert from "./Alert";
 import { useSelector } from "react-redux";
 import { userSelector } from "../redux/Slices/userSice";
@@ -10,24 +10,39 @@ import { useNavigate } from "react-router-dom";
 import { StacksEditor } from "@stackoverflow/stacks-editor";
 import "@stackoverflow/stacks-editor/dist/styles.css";
 import { useRef } from "react";
-
-// import "@stackoverflow/stacks-editor/dist/fonts.css";
-export default function CreateQuestion() {
+import Cookies from "js-cookie";
+// import axios from "axios";
+export default function CreateQuestion({
+  title,
+  description,
+  update,
+  questionId,
+}) {
+  const jwt = Cookies.get("jwt");
+  const config = {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  };
+  const isUpdate = update || false;
   const editorRef = useRef(null);
   const [tag, setTag] = useState("");
   const [tagList, setTagList] = useState([]);
-  const [value, setValue] = useState("");
-  const [question, setQuestion] = useState("");
+  const [value, setValue] = useState(description || "");
+  const [question, setQuestion] = useState(title || "");
   const user = useSelector(userSelector);
   const navigate = useNavigate();
-  // const [description, setDescription] = useState("");
   const [alert, setAlert] = useState("");
-  // useEffect(() => {
-  //   if (editorRef.current) {
-  //     new StacksEditor(editorRef.current, "*Your* **markdown** here");
-  //   }
-  // }, []);
-  
+  const [isOrgRelated, setIsOrgRelated] = useState(false); 
+  const [userDetails,setUserDetails]=useState({})
+  useEffect(()=>{
+    axios.get(`/api/User?userId=${user.uid}`,config).then((res)=>{
+      setUserDetails(res.data.data[0])
+    }).catch((err)=>{
+      console.log(err)
+    })
+  },[])
+  // console.log(userDetails)
   const handleAlertClose = () => {
     setAlert(null);
   };
@@ -57,21 +72,39 @@ export default function CreateQuestion() {
     const questionData = {
       title: question,
       description: value,
-      // description: value.substring(3, value.length - 4),
-      // description: stripHtmlTags(value).trim(),
       tags: tagList,
       askedBy: user,
-      uid:user.uid
+      uid: user.uid,
+      Organisation: isOrgRelated ? userDetails?.organization : "all",
     };
-    try {
-      const status = await axios.post("/api/createQuestion", questionData);
-      navigate("/");
-      console.log("Question created successfully:", status);
-    } catch (error) {
-      console.error("Error creating question:", error);
+    console.log("updata",questionData);
+    if (!isUpdate) {
+      try {
+        const status = await axios.post(
+          "/api/createQuestion",
+          questionData,
+          config
+        );
+        navigate("/");
+        console.log("Question created successfully:", status);
+      } catch (error) {
+        console.error("Error creating question:", error);
+      }
+    } else {
+      try {
+        const status = await axios.patch(
+          `/api/modifyQuestion/${questionId}`,
+          questionData,
+          config
+        );
+        navigate("/");
+        console.log("Question updated successfully:", status);
+      } catch (error) {
+        console.error("Error updating question:", error);
+      }
     }
   };
-  // console.log(user)
+  console.log(user)
   return (
     <div
       className="mx-auto w-50 d-flex flex-column"
@@ -79,7 +112,7 @@ export default function CreateQuestion() {
     >
       {alert && <Alert alert={alert} handleAlertClose={handleAlertClose} />}
       <div className="d-flex justify-content-center shadow p-3 mb-5 bg-white rounded align-items-center text-align-center">
-        <h3>Post Your Query</h3>
+        <h3>{isUpdate === false ? "Post Your Query" : "Update Your Query"}</h3>
       </div>
       <div className="d-flex shadow p-3 mb-5 bg-white rounded">
         <div style={{ maxWidth: "100%", width: "100%" }}>
@@ -106,46 +139,21 @@ export default function CreateQuestion() {
               className=""
               placeholder="Enter your description"
               style={{ maxWidth: "100%", width: "100%" }}
-              // modules={{
-              //   toolbar: true,
-              //   syntax: true, // Enable syntax highlighting
-              //   clipboard: {
-              //     matchVisual: false,
-              //   },
-              // }}
-              // formats={[
-              //   "header",
-              //   "font",
-              //   "size",
-              //   "bold",
-              //   "italic",
-              //   "underline",
-              //   "strike",
-              //   "blockquote",
-              //   "code-block", // Enable code block format
-              //   "list",
-              //   "bullet",
-              //   "indent",
-              //   "link",
-              //   "image",
-              //   "color",
-              //   "background",
-              // ]}
             />
           </div>
-          {/* <div className="form-group">
-            <div id="editor-container" ref={editorRef}>
-              <h5 className="my-3"> Description</h5>
-              <StacksEditor
-                initialValue="Your markdown here"
-                value={value}
-                onChange={setValue}
-                placeholder="Enter your description"
-                style={{ maxWidth: "100%", width: "100%" }}
-              />
-            </div>
-          </div> */}
-
+          <div className="form-group d-flex align-items-center">
+            <input
+              type="checkbox"
+              id="orgRelated"
+              checked={isOrgRelated}
+              onChange={(e) => setIsOrgRelated(e.target.checked)}
+            />
+            <h5 className="my-3 ms-2">
+              <label htmlFor="orgRelated">
+                Is this question related to the organization?
+              </label>
+            </h5>
+          </div>
           <div className="form-group">
             <h5 className="my-3">
               <label htmlFor="tags">Tags</label>

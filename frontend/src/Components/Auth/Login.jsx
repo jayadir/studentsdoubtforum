@@ -51,7 +51,7 @@ export default function Login() {
     setLoading(true);
     setPersistence(auth, browserLocalPersistence).then(() => {
       signInWithEmailAndPassword(auth, email, password)
-        .then((res) => {
+        .then(async (res) => {
           if (res.user.emailVerified) {
             console.log(res);
             setLoading(false);
@@ -59,7 +59,9 @@ export default function Login() {
             setPassword("");
             const expires = new Date();
             expires.setDate(expires.getDate() + 1);
-            setCookie("jwt", res.user.accessToken, expires);
+            const token = await res.user.getIdToken(true); 
+
+            setCookie("jwt", token, expires);
             setCookie("uid", res.user.uid, expires);
             navigate("/");
 

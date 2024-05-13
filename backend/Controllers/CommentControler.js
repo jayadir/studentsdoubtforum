@@ -7,7 +7,7 @@ exports.createComment = async (req, res) => {
   const commentData = new comment({
     comment: req.body.comment,
     commentedBy: req.body.commentedBy,
-    question: req.params.questionId,
+    question: req.body.questionId,
     answer: req.params.answerId,
   });
   try {

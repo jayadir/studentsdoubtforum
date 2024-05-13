@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-const auth=require("../middlewares/Authorization");
-const user=require("../Models/UserModel");
+const auth = require("../middlewares/Authorization");
+const user = require("../Models/UserModel");
+
 app.use(express.json());
 exports.createUser = async (req, res) => {
   const userData = new user({
@@ -26,36 +27,53 @@ exports.createUser = async (req, res) => {
   }
 };
 
-exports.getUser=async(req,res)=>{
+exports.getUser = async (req, res) => {
   try {
-    const {userId}=req.query;
-    
-    const userData=await user.aggregate([
-      {
-        $match:{
-          userId:userId
-        }
-      },
-      {
-        $lookup: {
-          from: "Questions", // the other collection
-          localField: "uid", // field from the Users documents
-          foreignField: "userId", // field from the Questions documents
-          as: "userQuestions" // output array field
-        }
-      }
-      
-      
-    ]).exec()
+    const { userId } = req.query;
+
+    const userData = await user
+      .aggregate([
+        {
+          $match: {
+            userId: userId,
+          },
+        },
+        {
+          $lookup: {
+            from: "Questions", // the other collection
+            localField: "uid", // field from the Users documents
+            foreignField: "userId", // field from the Questions documents
+            as: "userQuestions", // output array field
+          },
+        },
+      ])
+      .exec();
     res.status(200).json({
-      status:true,
-      data:userData,
-      userId
-    })
+      status: true,
+      data: userData,
+      userId,
+    });
   } catch (error) {
     res.status(500).json({
-      status:false,
-      message:error.message
-    })
+      status: false,
+      message: error.message,
+    });
   }
-}
+};
+
+exports.increaseRating = async (req, res) => {
+  try {
+    const response = await user.findOneAndUpdate(
+      {userId:req.body.uid},
+      {
+        $inc: {
+          rating: 1,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ status: true, message: "rating increased" });
+  } catch (error) {
+    res.status(500).json({ status: false, message: error.message });
+  }
+};

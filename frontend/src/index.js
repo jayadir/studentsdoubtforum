@@ -13,7 +13,10 @@ import { store } from "./redux/Store";
 import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 import CreateUserProfile from "./Components/Profile/CreateUserProfile";
 import UserProfile from "./Components/Profile/UserProfile";
+import OrganisationPage from "./Components/OrganisationPage";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +34,6 @@ const router = createBrowserRouter([
         path: "/:title",
         element: (
           <ProtectedRoute>
-            {" "}
             <Homepage />
           </ProtectedRoute>
         ),
@@ -48,7 +50,6 @@ const router = createBrowserRouter([
         path: "/answer/:questionId",
         element: (
           <ProtectedRoute>
-            {" "}
             <Answer />
           </ProtectedRoute>
         ),
@@ -59,12 +60,16 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile/:uid",
+        element: <UserProfile />,
+      },
+      {
+        path: "/organisation/:orgName",
         element: (
-          
-            <UserProfile/>
-         
+          <ProtectedRoute>
+            <OrganisationPage />
+          </ProtectedRoute>
         ),
-      }
+      },
     ],
   },
   {
@@ -81,7 +86,4 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

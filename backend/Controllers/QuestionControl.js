@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const app = express();
 const auth = require("../middlewares/Authorization");
 const question = require("../Models/QuestionModel");
+const messageController = require("./MessageController");
 app.use(express.json());
 
 exports.createQuestion = async (req, res) => {
@@ -11,7 +12,8 @@ exports.createQuestion = async (req, res) => {
     description: req.body.description,
     tags: req.body.tags,
     askedBy: req.body.askedBy,
-    uid:req.body.uid
+    uid:req.body.uid,
+    Organisation:req.body.Organisation
   });
 
   try {
@@ -21,16 +23,22 @@ exports.createQuestion = async (req, res) => {
       message: "Question Created Successfully",
       data: savedQuestion,
     });
+    messageController.sendMessage();
   } catch (error) {
     res.status(500).json({ status: false, message: error.message });
   }
 };
 
 exports.getAllQuestions = async (req, res) => {
-  const {filter}=req.query
+  const {filter,org}=req.query
   const field=filter==="Newest"?"createdAt":"upvotes"
   question
     .aggregate([
+      {
+        $match: {
+          Organisation: org
+        }
+      },
       {
         $lookup: {
           from: "answers",
@@ -79,24 +87,24 @@ exports.getOneQuestion = async (req, res) => {
             {
               $match: {
                 $expr: {
-                  $eq: ["$question", "$$question_id"], // Changed field name from question_id to question
+                  $eq: ["$question", "$$question_id"], 
                 },
               },
             },
             {
               $project: {
                 _id: 1,
-                answeredBy: 1, // Changed field name from user to answeredBy
-                Answer: 1, // Changed field name from answer to Answer
-                answeredAt: 1, // Changed field name from created_at to answeredAt
-                question: 1, // Changed field name from question_id to question
+                answeredBy: 1,
+                Answer: 1, 
+                answeredAt: 1, 
+                question: 1, 
                 upvotes: 1,
                 downvotes: 1,
                 comment: 1,
               },
             },
             {
-              $sort: { upvotes: -1 }, // Sort based on upvotes in descending order
+              $sort: { upvotes: -1 },
             },
           ],
           as: "answerDetails",
@@ -110,14 +118,14 @@ exports.getOneQuestion = async (req, res) => {
             {
               $match: {
                 $expr: {
-                  $eq: ["$question", "$$question_id"], // Changed field name from question_id to question
+                  $eq: ["$question", "$$question_id"], 
                 },
               },
             },
             {
               $project: {
                 _id: 1,
-                question: 1, // Changed field name from question_id to question
+                question: 1, 
                 commentedBy: 1,
                 comment: 1,
                 commentedAt: 1,
@@ -222,3 +230,23 @@ exports.getUserQuestions = async (req, res) => {
     });
   }
 };
+
+exports.updateQuestion=async (req,res)=>{
+  try {
+    const {id}=req.params
+    const response=await question.findByIdAndUpdate(id,{
+      title:req.body.title,
+      description:req.body.description
+    },{new:true})
+    res.status(200).json({
+      status:true,
+      data:response
+    })
+  } catch (error) {
+    res.status(500).json({
+      status:false,
+      message:error.message
+    })
+  }
+
+}

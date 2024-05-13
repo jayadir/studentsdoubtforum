@@ -5,14 +5,22 @@ import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import ThumbDownIcon from "@material-ui/icons/ThumbDown";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Cookies from 'js-cookie';
 function limitString(string, limit) {
   return string.length > limit ? string.substring(0, limit) + "..." : string;
 }
 export default function Question({ data }) {
+  const jwt=Cookies.get('jwt')
+  // console.log(jwt)
+  const config={
+    headers:{
+      Authorization:`Bearer ${jwt}`
+    }
+  }
   const [upvotes, setUpvotes] = useState(data.upvotes)
   const [downvotes, setDownvotes] = useState(data.downvotes)
   const handleUpvote = async () => {
-    const res=await axios.put("/api/upvote/"+data._id)
+    const res=await axios.put("/api/upvote/"+data._id,{},config)
     if(res.status===200){
       setUpvotes(upvotes+1)
     }
@@ -21,7 +29,7 @@ export default function Question({ data }) {
     }
   }
   const handleDowntvote = async () => {
-    const res=await axios.put("/api/downvote/"+data._id)
+    const res=await axios.put("/api/downvote/"+data._id,{},config)
     if(res.status===200){
       setDownvotes(downvotes+1)
     }

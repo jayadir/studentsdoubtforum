@@ -35,7 +35,12 @@ const QuestionSchema = new mongoose.Schema({
     downvotes:{
         type:Number,
         default:0
+    },
+    Organisation:{
+        type:String,
+        // required:true,
     }
+
 
 })
 QuestionSchema.index({title:"text"});
