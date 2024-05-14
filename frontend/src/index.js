@@ -14,6 +14,8 @@ import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 import CreateUserProfile from "./Components/Profile/CreateUserProfile";
 import UserProfile from "./Components/Profile/UserProfile";
 import OrganisationPage from "./Components/OrganisationPage";
+import CreatePoll from "./Components/Poll/CreatePoll";
+import PollsPage from "./Components/Poll/PollsPage";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -70,6 +72,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "/createpoll/:uid",
+        element: <CreatePoll />,
+      },
+      {
+        path:"/polls/:uid",
+        element:<PollsPage/>
+      }
     ],
   },
   {

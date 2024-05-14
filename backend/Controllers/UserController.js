@@ -40,10 +40,10 @@ exports.getUser = async (req, res) => {
         },
         {
           $lookup: {
-            from: "Questions", // the other collection
-            localField: "uid", // field from the Users documents
-            foreignField: "userId", // field from the Questions documents
-            as: "userQuestions", // output array field
+            from: "Questions", 
+            localField: "uid",
+            foreignField: "userId", 
+            as: "userQuestions", 
           },
         },
       ])

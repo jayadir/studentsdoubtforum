@@ -6,6 +6,7 @@ const userController = require("../Controllers/UserController");
 const commentController = require("../Controllers/CommentControler");
 const middleware=require('..//middlewares/Authorization');
 const messageController=require('../Controllers/MessageController');
+const pollController=require('../Controllers/PollController');
 router.route("/createQuestion")
     .post(middleware.verifyToken,questionController.createQuestion);
 router.route("/createAnswer")
@@ -35,4 +36,10 @@ router.route("/searchquestions")
     .get(middleware.verifyToken,questionController.searchQuestions);
 router.route("/subscribe")
     .post(messageController.subscribe);
+router.route("/poll")
+    .post(pollController.createPoll)
+    .get(pollController.getPolls)
+    .patch(pollController.vote);
+router.route("/getUserPolls")
+    .get(pollController.getUserPolls)
 module.exports = router;

@@ -43,6 +43,7 @@ function App() {
             uid: res.data.data[0].userId,
             name: res.data.data[0].name,
             email: res.data.data[0].email,
+            
             // organisation: res.data.data[0].organisation,
             // isVerified: res.data.data.isVerified
           })

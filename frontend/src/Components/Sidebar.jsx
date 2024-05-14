@@ -16,7 +16,7 @@ function Sidebar() {
       })
       .then((res) => {
         setUserDetails(res.data.data[0]);
-        console.log(res.data.data[0])
+        console.log("side bar",res.data.data[0])
       })
       .catch((err) => {
         console.log(err);
@@ -45,9 +45,9 @@ function Sidebar() {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
-                  Blogs
-                </a>
+                <Link className="nav-link" to={`/polls/${userDetails._id}`}>
+                  Polls
+                </Link>
               </li>
               <li className="nav-item">
                 <Link
